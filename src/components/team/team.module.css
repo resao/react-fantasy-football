@@ -1,0 +1,15 @@
+.team {
+  width: 100%;
+  margin: auto;
+  height: 400px;
+  overflow: scroll;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  gap: 1px 1px;
+  grid-template-areas: ". . keeper . ." ". defender1 defender2 defender3 ." "midfielder1 midfielder2 midfielder3 midfielder4 midfielder5" ". forward1 . forward2 .";
+}

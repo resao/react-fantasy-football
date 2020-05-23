@@ -1,0 +1,43 @@
+.keeper {
+  grid-area: keeper;
+}
+
+.defender1 {
+  grid-area: defender1;
+}
+
+.defender2 {
+  grid-area: defender2;
+}
+
+.defender3 {
+  grid-area: defender3;
+}
+
+.forward1 {
+  grid-area: forward1;
+}
+
+.forward2 {
+  grid-area: forward2;
+}
+
+.midfielder1 {
+  grid-area: midfielder1;
+}
+
+.midfielder2 {
+  grid-area: midfielder2;
+}
+
+.midfielder3 {
+  grid-area: midfielder3;
+}
+
+.midfielder4 {
+  grid-area: midfielder4;
+}
+
+.midfielder5 {
+  grid-area: midfielder5;
+}
