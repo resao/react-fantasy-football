@@ -1,7 +1,7 @@
 import React from "react";
 import Control from "./control/";
 
-import styles from "./controls.module.css";
+import classes from "./controls.module.css";
 
 const controls = (props) => {
   const controlData = Object.keys(props.players).map((key) => {
@@ -12,7 +12,7 @@ const controls = (props) => {
   });
 
   return (
-    <div className={styles.controls}>
+    <div className={classes.controls}>
       <p>
         Team value: <strong>{props.price.toFixed(2)}</strong>
       </p>

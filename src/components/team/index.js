@@ -2,7 +2,7 @@ import React from "react";
 import Player from "./player/";
 import PropTypes from "prop-types";
 
-import styles from "./team.module.css";
+import classes from "./team.module.css";
 
 const team = (props) => {
   let transformedPlayers = Object.keys(props.players)
@@ -19,7 +19,7 @@ const team = (props) => {
     transformedPlayers = <p>No players selected</p>;
   }
 
-  return <div className={styles.team}> {transformedPlayers} </div>;
+  return <div className={classes.team}> {transformedPlayers} </div>;
 };
 
 team.propTypes = {
