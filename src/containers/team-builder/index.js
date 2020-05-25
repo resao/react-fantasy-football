@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import Team from "../../components/team/";
 import Controls from "../../components/team/controls/";
+import Modal from "../../components/ui/modal/";
+import Summary from "../../components/team/summary/";
 
 const PLAYER_PRICES = {
   goalkeeper: 1000,
@@ -18,10 +20,16 @@ class TeamBuilder extends Component {
       forward: 2,
     },
     totalPrice: 30000,
+    saving: false,
     valid: false,
   };
 
-  updateValidState(players) {
+  saveHandler = () => {
+    console.log("call be baby");
+    this.setState({ saving: true });
+  };
+
+  updateValidState = (players) => {
     const sum = Object.keys(players)
       .map((key) => {
         return players[key];
@@ -31,7 +39,7 @@ class TeamBuilder extends Component {
       }, 0);
 
     this.setState({ valid: sum > 0 });
-  }
+  };
 
   addPlayerHandler = (type) => {
     const players = {
@@ -71,6 +79,14 @@ class TeamBuilder extends Component {
     this.updateValidState(players);
   };
 
+  saveCancelHandler = () => {
+    this.setState({ saving: false });
+  };
+
+  saveContinueHandler = () => {
+    alert("You continue!");
+  };
+
   render() {
     const players = {
       ...this.state.players,
@@ -82,12 +98,21 @@ class TeamBuilder extends Component {
 
     return (
       <React.Fragment>
+        <Modal show={this.state.saving} modalClosed={this.saveCancelHandler}>
+          <Summary
+            players={this.state.players}
+            price={this.state.totalPrice}
+            saveCancelled={this.saveCancelHandler}
+            saveContinued={this.saveContinueHandler}
+          />
+        </Modal>
         <Team players={this.state.players} />
         <Controls
           playerAdded={this.addPlayerHandler}
           playerRemoved={this.removePlayerHandler}
           players={players}
           price={this.state.totalPrice}
+          saved={this.saveHandler}
           valid={this.state.valid}
         />
       </React.Fragment>

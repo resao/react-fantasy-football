@@ -25,7 +25,9 @@ const controls = (props) => {
           disabled={props.players[control.type]}
         />
       ))}
-      <button disabled={!props.valid}>SAVE TEAM</button>
+      <button disabled={!props.valid} onClick={props.saved}>
+        SAVE TEAM
+      </button>
     </div>
   );
 };
