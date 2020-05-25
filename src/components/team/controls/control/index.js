@@ -1,12 +1,14 @@
 import React from "react";
 
-import classes from "./control.module.css";
+import styles from "./control.module.css";
 
 const control = (props) => (
-  <div className={classes.control}>
+  <div className={styles.control}>
     <div>{props.label}</div>
     <button onClick={props.added}>Add</button>
-    <button onClick={props.removed}>Remove</button>
+    <button onClick={props.removed} disabled={props.disabled}>
+      Remove
+    </button>
   </div>
 );
 

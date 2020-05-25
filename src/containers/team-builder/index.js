@@ -3,7 +3,7 @@ import Team from "../../components/team/";
 import Controls from "../../components/team/controls/";
 
 const PLAYER_PRICES = {
-  keeper: 1000,
+  goalkeeper: 1000,
   defender: 2000,
   midfielder: 3000,
   forward: 4000,
@@ -18,7 +18,20 @@ class TeamBuilder extends Component {
       forward: 2,
     },
     totalPrice: 30000,
+    valid: false,
   };
+
+  updateValidState(players) {
+    const sum = Object.keys(players)
+      .map((key) => {
+        return players[key];
+      })
+      .reduce((sum, el) => {
+        return sum + el;
+      }, 0);
+
+    this.setState({ valid: sum > 0 });
+  }
 
   addPlayerHandler = (type) => {
     const players = {
@@ -33,12 +46,18 @@ class TeamBuilder extends Component {
       totalPrice,
       players,
     });
+
+    this.updateValidState(players);
   };
 
   removePlayerHandler = (type) => {
     const players = {
       ...this.state.players,
     };
+
+    if (players[type] <= 0) {
+      return;
+    }
 
     players[type]--;
 
@@ -48,16 +67,28 @@ class TeamBuilder extends Component {
       totalPrice,
       players,
     });
+
+    this.updateValidState(players);
   };
 
   render() {
+    const players = {
+      ...this.state.players,
+    };
+
+    for (let player in players) {
+      players[player] = players[player] <= 0;
+    }
+
     return (
       <React.Fragment>
         <Team players={this.state.players} />
         <Controls
           playerAdded={this.addPlayerHandler}
           playerRemoved={this.removePlayerHandler}
-          players={this.state.players}
+          players={players}
+          price={this.state.totalPrice}
+          valid={this.state.valid}
         />
       </React.Fragment>
     );
