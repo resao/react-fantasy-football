@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Layout from "./components/layout/";
+import Layout from "./containers/layout/";
 import TeamBuilder from "./containers/team-builder/";
 
 class App extends Component {
