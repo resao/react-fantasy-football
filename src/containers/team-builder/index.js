@@ -3,6 +3,9 @@ import Team from "../../components/team/";
 import Controls from "../../components/team/controls/";
 import Modal from "../../components/ui/modal/";
 import Summary from "../../components/team/summary/";
+import axios from "../../axios-save-team";
+import Spinner from "../../components/ui/spinner";
+import ErrorHandler from "../../hoc/error-handler/";
 
 const PLAYER_PRICES = {
   goalkeeper: 1000,
@@ -13,19 +16,26 @@ const PLAYER_PRICES = {
 
 class TeamBuilder extends Component {
   state = {
-    players: {
-      goalkeeper: 1,
-      defender: 3,
-      midfielder: 5,
-      forward: 2,
-    },
+    players: null,
     totalPrice: 30000,
+    loading: false,
     saving: false,
     valid: false,
+    error: null,
   };
 
+  componentDidMount() {
+    axios
+      .get("players.json")
+      .then((res) => {
+        this.setState({ players: res.data });
+      })
+      .catch((error) => {
+        this.setState({ error: true });
+      });
+  }
+
   saveHandler = () => {
-    console.log("call be baby");
     this.setState({ saving: true });
   };
 
@@ -84,10 +94,35 @@ class TeamBuilder extends Component {
   };
 
   saveContinueHandler = () => {
-    alert("You continue!");
+    this.setState({ loading: true });
+
+    const order = {
+      players: this.state.players,
+      price: this.state.totalPrice,
+      customer: {
+        name: "Smithy",
+        address: {
+          street: "Equality street",
+        },
+        email: "test@test.com",
+      },
+      deliveryMethod: "fastest",
+    };
+
+    axios
+      .post("/saves.json", order)
+      .then((res) => {
+        this.setState({ loading: false, saving: false });
+      })
+      .catch((e) => {
+        this.setState({ loading: false, saving: false });
+      });
   };
 
   render() {
+    let summary = null;
+    let team = this.state.error ? <p>Players failed to load </p> : <Spinner />;
+
     const players = {
       ...this.state.players,
     };
@@ -96,28 +131,44 @@ class TeamBuilder extends Component {
       players[player] = players[player] <= 0;
     }
 
+    if (this.state.players) {
+      summary = (
+        <Summary
+          players={this.state.players}
+          price={this.state.totalPrice}
+          saveCancelled={this.saveCancelHandler}
+          saveContinued={this.saveContinueHandler}
+        />
+      );
+
+      team = (
+        <React.Fragment>
+          <Team players={this.state.players} />
+          <Controls
+            playerAdded={this.addPlayerHandler}
+            playerRemoved={this.removePlayerHandler}
+            players={players}
+            price={this.state.totalPrice}
+            saved={this.saveHandler}
+            valid={this.state.valid}
+          />
+        </React.Fragment>
+      );
+    }
+
+    if (this.state.loading) {
+      summary = <Spinner />;
+    }
+
     return (
       <React.Fragment>
         <Modal show={this.state.saving} modalClosed={this.saveCancelHandler}>
-          <Summary
-            players={this.state.players}
-            price={this.state.totalPrice}
-            saveCancelled={this.saveCancelHandler}
-            saveContinued={this.saveContinueHandler}
-          />
+          {summary}
         </Modal>
-        <Team players={this.state.players} />
-        <Controls
-          playerAdded={this.addPlayerHandler}
-          playerRemoved={this.removePlayerHandler}
-          players={players}
-          price={this.state.totalPrice}
-          saved={this.saveHandler}
-          valid={this.state.valid}
-        />
+        {team}
       </React.Fragment>
     );
   }
 }
 
-export default TeamBuilder;
+export default ErrorHandler(TeamBuilder, axios);
