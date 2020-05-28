@@ -2,7 +2,7 @@ import React from "react";
 
 import classes from "./control.module.css";
 
-const control = (props) => (
+export default (props) => (
   <div className={classes.control}>
     <div>{props.label}</div>
     <button onClick={props.added}>Add</button>
@@ -11,5 +11,3 @@ const control = (props) => (
     </button>
   </div>
 );
-
-export default control;

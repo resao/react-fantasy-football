@@ -2,13 +2,12 @@ import React from "react";
 import Item from "./item/";
 import classes from "./items.module.css";
 
-const items = () => (
+export default () => (
   <ul className={classes.items}>
-    <Item link="/" active>
+    <Item link="/" exact>
       Team Builder
     </Item>
-    <Item link="/">Checkout</Item>
+    <Item link="/save">Save</Item>
+    <Item link="/saves">Saves</Item>
   </ul>
 );
-
-export default items;

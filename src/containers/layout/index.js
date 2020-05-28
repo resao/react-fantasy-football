@@ -4,7 +4,7 @@ import SideDrawer from "../../components/navigation/side-drawer";
 
 import classes from "./layout.module.css";
 
-class Layout extends Component {
+export default class Layout extends Component {
   state = {
     showSideDrawer: false,
   };
@@ -32,5 +32,3 @@ class Layout extends Component {
     );
   }
 }
-
-export default Layout;

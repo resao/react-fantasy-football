@@ -3,9 +3,9 @@ import Team from "../../components/team/";
 import Controls from "../../components/team/controls/";
 import Modal from "../../components/ui/modal/";
 import Summary from "../../components/team/summary/";
-import axios from "../../axios-save-team";
 import Spinner from "../../components/ui/spinner";
 import ErrorHandler from "../../hoc/error-handler/";
+import axios from "../../axios-team-data";
 
 const PLAYER_PRICES = {
   goalkeeper: 1000,
@@ -94,29 +94,19 @@ class TeamBuilder extends Component {
   };
 
   saveContinueHandler = () => {
-    this.setState({ loading: true });
-
-    const order = {
-      players: this.state.players,
+    const query = {
+      ...this.state.players,
       price: this.state.totalPrice,
-      customer: {
-        name: "Smithy",
-        address: {
-          street: "Equality street",
-        },
-        email: "test@test.com",
-      },
-      deliveryMethod: "fastest",
     };
 
-    axios
-      .post("/saves.json", order)
-      .then((res) => {
-        this.setState({ loading: false, saving: false });
-      })
-      .catch((e) => {
-        this.setState({ loading: false, saving: false });
-      });
+    this.props.history.push({
+      pathname: "save",
+      search: Object.keys(query)
+        .map((key) => {
+          return encodeURIComponent(key) + "=" + encodeURIComponent(query[key]);
+        })
+        .join("&"),
+    });
   };
 
   render() {

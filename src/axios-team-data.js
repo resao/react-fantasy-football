@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const instance = axios.create({
+export default axios.create({
   baseURL: "https://react-fantasy-football.firebaseio.com/",
 });
-
-export default instance;

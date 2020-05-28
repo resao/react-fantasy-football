@@ -5,7 +5,7 @@ import Backdrop from "../../ui/backdrop/";
 
 import classes from "./side-drawer.module.css";
 
-const sideDrawer = (props) => {
+export default (props) => {
   let attachedClasses = [classes["side-drawer"], classes.close];
 
   if (props.open) {
@@ -26,5 +26,3 @@ const sideDrawer = (props) => {
     </React.Fragment>
   );
 };
-
-export default sideDrawer;

@@ -1,15 +1,20 @@
 import React, { Component } from "react";
 import Layout from "./containers/layout/";
 import TeamBuilder from "./containers/team-builder/";
+import SaveTeam from "./containers/save-team/";
+import Saves from "./containers/saves/";
+import { Switch, Route } from "react-router-dom";
 
-class App extends Component {
+export default class App extends Component {
   render() {
     return (
       <Layout>
-        <TeamBuilder />
+        <Switch>
+          <Route path="/save" component={SaveTeam} />
+          <Route path="/saves" component={Saves} />
+          <Route path="/" component={TeamBuilder} exact />
+        </Switch>
       </Layout>
     );
   }
 }
-
-export default App;

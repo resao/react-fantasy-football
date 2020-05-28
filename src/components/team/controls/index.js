@@ -3,7 +3,7 @@ import Control from "./control/";
 
 import classes from "./controls.module.css";
 
-const controls = (props) => {
+export default (props) => {
   const controlData = Object.keys(props.players).map((key) => {
     return {
       label: key,
@@ -31,5 +31,3 @@ const controls = (props) => {
     </div>
   );
 };
-
-export default controls;

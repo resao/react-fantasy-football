@@ -4,7 +4,7 @@ import Navigation from "../items/";
 import Toggle from "../side-drawer/toggle/";
 import classes from "./toolbar.module.css";
 
-const toolbar = (props) => (
+export default (props) => (
   <header className={classes.toolbar}>
     <Toggle clicked={props.toggleSideDrawer} />
     <div className={classes.logo}>
@@ -15,5 +15,3 @@ const toolbar = (props) => (
     </nav>
   </header>
 );
-
-export default toolbar;

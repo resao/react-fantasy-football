@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "../../ui/button/";
 
-const summary = (props) => {
+export default (props) => {
   const teamSummary = Object.keys(props.players).map((key) => {
     return (
       <li key={key}>
@@ -28,5 +28,3 @@ const summary = (props) => {
     </React.Fragment>
   );
 };
-
-export default summary;
