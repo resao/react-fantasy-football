@@ -1,0 +1,32 @@
+.form-element {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.input {
+  outline: none;
+  border: 1px solid #ccc;
+  background-color: white;
+  box-sizing: border-box;
+  font: intherit;
+  padding: 5px 10px;
+  display: block;
+  width: 100%;
+}
+
+.input:focus {
+  outline: none;
+  background-color: #ccc;
+}
+
+.invalid {
+  border: 1px solid red;
+  background: salmon;
+}

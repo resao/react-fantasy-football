@@ -9,3 +9,8 @@
 .danger {
   color: darkred;
 }
+
+.button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
