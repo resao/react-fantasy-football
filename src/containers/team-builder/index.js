@@ -5,34 +5,17 @@ import Modal from "../../components/ui/modal/";
 import Summary from "../../components/team/summary/";
 import Spinner from "../../components/ui/spinner";
 import ErrorHandler from "../../hoc/error-handler/";
+import { connect } from "react-redux";
+import * as actions from "../../store/actions/";
 import axios from "../../axios-team-data";
-
-const PLAYER_PRICES = {
-  goalkeeper: 1000,
-  defender: 2000,
-  midfielder: 3000,
-  forward: 4000,
-};
 
 class TeamBuilder extends Component {
   state = {
-    players: null,
-    totalPrice: 30000,
-    loading: false,
     saving: false,
-    valid: false,
-    error: null,
   };
 
   componentDidMount() {
-    axios
-      .get("players.json")
-      .then((res) => {
-        this.setState({ players: res.data });
-      })
-      .catch((error) => {
-        this.setState({ error: true });
-      });
+    this.props.onInitPlayers();
   }
 
   saveHandler = () => {
@@ -48,45 +31,7 @@ class TeamBuilder extends Component {
         return sum + el;
       }, 0);
 
-    this.setState({ valid: sum > 0 });
-  };
-
-  addPlayerHandler = (type) => {
-    const players = {
-      ...this.state.players,
-    };
-
-    players[type]++;
-
-    const totalPrice = this.state.totalPrice + PLAYER_PRICES[type];
-
-    this.setState({
-      totalPrice,
-      players,
-    });
-
-    this.updateValidState(players);
-  };
-
-  removePlayerHandler = (type) => {
-    const players = {
-      ...this.state.players,
-    };
-
-    if (players[type] <= 0) {
-      return;
-    }
-
-    players[type]--;
-
-    const totalPrice = this.state.totalPrice - PLAYER_PRICES[type];
-
-    this.setState({
-      totalPrice,
-      players,
-    });
-
-    this.updateValidState(players);
+    return sum > 0;
   };
 
   saveCancelHandler = () => {
@@ -94,38 +39,27 @@ class TeamBuilder extends Component {
   };
 
   saveContinueHandler = () => {
-    const query = {
-      ...this.state.players,
-      price: this.state.totalPrice,
-    };
-
-    this.props.history.push({
-      pathname: "save",
-      search: Object.keys(query)
-        .map((key) => {
-          return encodeURIComponent(key) + "=" + encodeURIComponent(query[key]);
-        })
-        .join("&"),
-    });
+    this.props.onInitSave();
+    this.props.history.push("/save");
   };
 
   render() {
     let summary = null;
-    let team = this.state.error ? <p>Players failed to load </p> : <Spinner />;
+    let team = this.props.error ? <p>Players failed to load </p> : <Spinner />;
 
     const players = {
-      ...this.state.players,
+      ...this.props.players,
     };
 
     for (let player in players) {
       players[player] = players[player] <= 0;
     }
 
-    if (this.state.players) {
+    if (this.props.players) {
       summary = (
         <Summary
-          players={this.state.players}
-          price={this.state.totalPrice}
+          players={this.props.players}
+          price={this.props.price}
           saveCancelled={this.saveCancelHandler}
           saveContinued={this.saveContinueHandler}
         />
@@ -133,21 +67,17 @@ class TeamBuilder extends Component {
 
       team = (
         <React.Fragment>
-          <Team players={this.state.players} />
+          <Team players={this.props.players} />
           <Controls
-            playerAdded={this.addPlayerHandler}
-            playerRemoved={this.removePlayerHandler}
+            playerAdded={this.props.onPlayerAdded}
+            playerRemoved={this.props.onPlayerRemoved}
             players={players}
-            price={this.state.totalPrice}
+            price={this.props.price}
             saved={this.saveHandler}
-            valid={this.state.valid}
+            valid={this.updateValidState(this.props.players)}
           />
         </React.Fragment>
       );
-    }
-
-    if (this.state.loading) {
-      summary = <Spinner />;
     }
 
     return (
@@ -161,4 +91,24 @@ class TeamBuilder extends Component {
   }
 }
 
-export default ErrorHandler(TeamBuilder, axios);
+const mapStateToProps = (state) => {
+  return {
+    players: state.teamBuilder.players,
+    price: state.teamBuilder.totalPrice,
+    error: state.teamBuilder.error,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onPlayerAdded: (name) => dispatch(actions.addPlayer(name)),
+    onPlayerRemoved: (name) => dispatch(actions.removePlayer(name)),
+    onInitPlayers: () => dispatch(actions.initPlayers()),
+    onInitSave: () => dispatch(actions.saveInit()),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ErrorHandler(TeamBuilder, axios));

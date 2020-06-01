@@ -1,30 +1,10 @@
 import React, { Component } from "react";
 import Summary from "../../components/save/summary/";
-import { Route } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 import ContactData from "./contact-data";
+import { connect } from "react-redux";
 
-export default class SaveTeam extends Component {
-  state = {
-    players: null,
-    totalPrice: 0,
-  };
-
-  componentWillMount() {
-    const query = new URLSearchParams(this.props.location.search);
-    const players = {};
-    let price = 0;
-
-    for (let param of query.entries()) {
-      if (param[0] === "price") {
-        price = param[1];
-      } else {
-        players[param[0]] = +param[1];
-      }
-    }
-
-    this.setState({ players, totalPrice: price });
-  }
-
+class SaveTeam extends Component {
   saveCancelledHandler = () => {
     this.props.history.goBack();
   };
@@ -34,24 +14,34 @@ export default class SaveTeam extends Component {
   };
 
   render() {
-    return (
-      <div>
-        <Summary
-          players={this.state.players}
-          saveCancelled={this.saveCancelledHandler}
-          saveContinued={this.saveContinuedHandler}
-        />
-        <Route
-          path={this.props.match.path + "/contact-data"}
-          render={(props) => (
-            <ContactData
-              players={this.state.players}
-              price={this.state.totalPrice}
-              {...props}
-            />
-          )}
-        />
-      </div>
-    );
+    let summary = <Redirect to="/" />;
+
+    if (this.props.players) {
+      const savedRedirect = this.props.saved ? <Redirect to="/" /> : null;
+
+      summary = (
+        <React.Fragment>
+          {savedRedirect}
+          <Summary
+            players={this.props.players}
+            saveCancelled={this.saveCancelledHandler}
+            saveContinued={this.saveContinuedHandler}
+          />
+          <Route
+            path={this.props.match.path + "/contact-data"}
+            component={ContactData}
+          />
+        </React.Fragment>
+      );
+    }
+
+    return summary;
   }
 }
+
+const mapStateToProps = (state) => ({
+  players: state.teamBuilder.players,
+  saved: state.saveTeam.saved,
+});
+
+export default connect(mapStateToProps)(SaveTeam);

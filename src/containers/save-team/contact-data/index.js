@@ -4,10 +4,13 @@ import Button from "../../../components/ui/button/";
 import Spinner from "../../../components/ui/spinner/";
 import classes from "./contact-data.module.css";
 import Input from "../../../components/ui/input/";
+import { connect } from "react-redux";
+import ErrorHandler from "../../../hoc/error-handler/";
+import * as actions from "../../../store/actions/";
 
-export default class ContactData extends Component {
+class ContactData extends Component {
   state = {
-    orderForm: {
+    saveForm: {
       name: {
         type: "input",
         config: {
@@ -94,33 +97,25 @@ export default class ContactData extends Component {
       },
     },
     formIsValid: false,
-    loading: false,
   };
 
   saveHandler = (event) => {
     event.preventDefault();
-    this.setState({ loading: true });
 
     const formData = {};
-    for (let element in this.state.orderForm) {
-      formData[element] = this.state.orderForm[element].value;
+    for (let element in this.state.saveForm) {
+      formData[element] = this.state.saveForm[element].value;
     }
 
-    const order = {
+    const save = {
       players: this.props.players,
       price: this.props.price,
-      orderData: formData,
+      saveData: formData,
     };
 
-    axios
-      .post("/saves.json", order)
-      .then((res) => {
-        this.setState({ loading: false });
-        this.props.history.push("/");
-      })
-      .catch((e) => {
-        this.setState({ loading: false });
-      });
+    console.log(save);
+
+    this.props.onSaveTeam(save);
   };
 
   checkValidity(value, rules) {
@@ -146,12 +141,12 @@ export default class ContactData extends Component {
   }
 
   inputChangedhandler = (event, id) => {
-    const updatedOrderForm = {
-      ...this.state.orderForm,
+    const updatedSaveForm = {
+      ...this.state.saveForm,
     };
 
     const updatedFormElement = {
-      ...updatedOrderForm[id],
+      ...updatedSaveForm[id],
     };
 
     updatedFormElement.value = event.target.value;
@@ -163,21 +158,21 @@ export default class ContactData extends Component {
 
     updatedFormElement.touched = true;
 
-    updatedOrderForm[id] = updatedFormElement;
+    updatedSaveForm[id] = updatedFormElement;
 
     let formIsValid = true;
 
-    for (let inputIdentifier in updatedOrderForm) {
-      formIsValid = updatedOrderForm[inputIdentifier].valid && formIsValid;
+    for (let inputIdentifier in updatedSaveForm) {
+      formIsValid = updatedSaveForm[inputIdentifier].valid && formIsValid;
     }
 
-    this.setState({ orderForm: updatedOrderForm, formIsValid });
+    this.setState({ saveForm: updatedSaveForm, formIsValid });
   };
 
   render() {
-    const formElements = Object.keys(this.state.orderForm).map((key) => ({
+    const formElements = Object.keys(this.state.saveForm).map((key) => ({
       id: key,
-      data: this.state.orderForm[key],
+      data: this.state.saveForm[key],
     }));
 
     let form = (
@@ -200,7 +195,7 @@ export default class ContactData extends Component {
       </form>
     );
 
-    if (this.state.loading) {
+    if (this.props.loading) {
       form = <Spinner />;
     }
 
@@ -212,3 +207,20 @@ export default class ContactData extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => ({
+  players: state.teamBuilder.players,
+  price: state.teamBuilder.totalPrice,
+  loading: state.saveTeam.loading,
+});
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSaveTeam: (data) => dispatch(actions.saveTeam(data)),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ErrorHandler(ContactData, axios));
