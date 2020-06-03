@@ -1,3 +1,15 @@
+# react-fantasy-football
+
+A simple application demonstrating the following React features:
+
+- Class-based components (/containers)
+- Functional components (/components)
+- Higher order components (/hoc)
+- Routing with react-router-dom
+- State management with redux and redux-thunk
+- API integration with firebase
+- Authentication with firebase
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
