@@ -1,13 +1,23 @@
 import React, { Component } from "react";
 import Layout from "./containers/layout/";
 import TeamBuilder from "./containers/team-builder/";
-import SaveTeam from "./containers/save-team/";
-import Saves from "./containers/saves/";
-import Auth from "./containers/auth/";
 import { Switch, Route, withRouter, Redirect } from "react-router-dom";
 import Logout from "./containers/auth/logout";
 import { connect } from "react-redux";
 import * as actions from "./store/actions/";
+import asyncComponent from "./hoc/async-component/";
+
+const asyncSave = asyncComponent(() => {
+  return import("./containers/save-team/");
+});
+
+const asyncSaves = asyncComponent(() => {
+  return import("./containers/saves/");
+});
+
+const asyncAuth = asyncComponent(() => {
+  return import("./containers/auth/");
+});
 
 class App extends Component {
   componentDidMount() {
@@ -17,7 +27,7 @@ class App extends Component {
   render() {
     let routes = (
       <Switch>
-        <Route path="/auth" component={Auth} />
+        <Route path="/auth" component={asyncAuth} />
         <Route path="/" component={TeamBuilder} exact />
         <Redirect to="/" />
       </Switch>
@@ -26,10 +36,10 @@ class App extends Component {
     if (this.props.isAuthenticated) {
       routes = (
         <Switch>
-          <Route path="/save" component={SaveTeam} />
-          <Route path="/saves" component={Saves} />
+          <Route path="/save" component={asyncSave} />
+          <Route path="/saves" component={asyncSaves} />
           <Route path="/logout" component={Logout} />
-          <Route path="/auth" component={Auth} />
+          <Route path="/auth" component={asyncAuth} />
           <Route path="/" component={TeamBuilder} exact />
           <Redirect to="/" />
         </Switch>
