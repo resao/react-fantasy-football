@@ -6,6 +6,7 @@ import Spinner from "../../components/ui/spinner/";
 import classes from "./auth.module.css";
 import { connect } from "react-redux";
 import * as actions from "../../store/actions/";
+import { updateObject, checkValidity } from "../../shared/utility";
 
 class Auth extends Component {
   state = {
@@ -48,41 +49,17 @@ class Auth extends Component {
     }
   }
 
-  checkValidity(value, rules) {
-    let isValid = true;
-
-    if (!rules) {
-      return true;
-    }
-
-    if (rules.required) {
-      isValid = value.trim() !== "" && isValid;
-    }
-
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid;
-    }
-
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid;
-    }
-
-    return isValid;
-  }
-
   inputChangedhandler = (event, controlName) => {
-    const updatedControls = {
-      ...this.state.controls,
-      [controlName]: {
-        ...this.state.controls[controlName],
+    const updatedControls = updateObject(this.state.controls, {
+      [controlName]: updateObject(this.state.controls[controlName], {
         touched: true,
         value: event.target.value,
-        valid: this.checkValidity(
+        valid: checkValidity(
           event.target.value,
           this.state.controls[controlName].validation
         ),
-      },
-    };
+      }),
+    });
 
     this.setState({ controls: updatedControls });
   };
