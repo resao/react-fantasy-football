@@ -1,4 +1,4 @@
-# Simple application demonstration implementations of various React features
+# Simple application demonstrating React features
 
 - Class-based components (/containers)
 - Functional components (/components)
