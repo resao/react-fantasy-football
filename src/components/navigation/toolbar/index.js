@@ -11,7 +11,7 @@ export default (props) => (
       <Logo />
     </div>
     <nav className={classes["desktop-only"]}>
-      <Navigation />
+      <Navigation isAuthenticated={props.isAuthenticated} />
     </nav>
   </header>
 );

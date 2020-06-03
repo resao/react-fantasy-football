@@ -26,7 +26,7 @@ export default (props) => {
         />
       ))}
       <button disabled={!props.valid} onClick={props.saved}>
-        SAVE TEAM
+        {props.isAuthenticated ? "SAVE TEAM" : "SIGN UP TO SAVE"}
       </button>
     </div>
   );

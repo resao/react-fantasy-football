@@ -19,7 +19,12 @@ class TeamBuilder extends Component {
   }
 
   saveHandler = () => {
-    this.setState({ saving: true });
+    if (this.props.isAuthenticated) {
+      this.setState({ saving: true });
+    } else {
+      this.props.onSetAuthRedirectPath("/save");
+      this.props.history.push("/auth");
+    }
   };
 
   updateValidState = (players) => {
@@ -74,6 +79,7 @@ class TeamBuilder extends Component {
             players={players}
             price={this.props.price}
             saved={this.saveHandler}
+            isAuthenticated={this.props.isAuthenticated}
             valid={this.updateValidState(this.props.players)}
           />
         </React.Fragment>
@@ -96,6 +102,7 @@ const mapStateToProps = (state) => {
     players: state.teamBuilder.players,
     price: state.teamBuilder.totalPrice,
     error: state.teamBuilder.error,
+    isAuthenticated: !!state.auth.token,
   };
 };
 
@@ -105,6 +112,8 @@ const mapDispatchToProps = (dispatch) => {
     onPlayerRemoved: (name) => dispatch(actions.removePlayer(name)),
     onInitPlayers: () => dispatch(actions.initPlayers()),
     onInitSave: () => dispatch(actions.saveInit()),
+    onSetAuthRedirectPath: (path) =>
+      dispatch(actions.setAuthRedirectPath(path)),
   };
 };
 

@@ -8,26 +8,10 @@ import Spinner from "../../components/ui/spinner/";
 
 class Saves extends Component {
   componentDidMount() {
-    this.props.onFetchSaves();
-    // axios
-    //   .get("/saves.json")
-    //   .then((res) => {
-    //     const fetchedSaves = [];
-    //     for (let key in res.data) {
-    //       fetchedSaves.push({
-    //         ...res.data[key],
-    //         id: key,
-    //       });
-    //     }
-    //     this.setState({ loading: false, saves: fetchedSaves });
-    //   })
-    //   .catch((e) => {
-    //     this.setState({ loading: false });
-    //   });
+    this.props.onFetchSaves(this.props.token, this.props.userId);
   }
 
   render() {
-    console.log(this.props);
     let saves = <Spinner />;
 
     if (!this.props.loading) {
@@ -48,12 +32,15 @@ const mapStateToProps = (state) => {
   return {
     saves: state.saveTeam.saves,
     loading: state.saveTeam.loading,
+    token: state.auth.token,
+    userId: state.auth.userId,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchSaves: () => dispatch(actions.fetchSaves()),
+    onFetchSaves: (token, userId) =>
+      dispatch(actions.fetchSaves(token, userId)),
   };
 };
 

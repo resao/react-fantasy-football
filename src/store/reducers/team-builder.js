@@ -3,8 +3,9 @@ import { updateObject } from "../utility";
 
 const initialState = {
   players: null,
-  totalPrice: 30000,
+  totalPrice: 0,
   error: false,
+  building: false,
 };
 
 const PLAYER_PRICES = {
@@ -20,6 +21,7 @@ const addPlayer = (state, action) => {
   const updatedState = {
     players: updatedPlayers,
     totalPrice: state.totalPrice + PLAYER_PRICES[action.name],
+    building: true,
   };
 
   return updateObject(state, updatedState);
@@ -31,6 +33,7 @@ const removePlayer = (state, action) => {
   const updatedState = {
     players: updatedPlayers,
     totalPrice: state.totalPrice + PLAYER_PRICES[action.name],
+    building: true,
   };
 
   return updateObject(state, updatedState);
@@ -41,6 +44,7 @@ const setPlayers = (state, action) => {
     players: action.players,
     error: false,
     totalPrice: initialState.totalPrice,
+    building: false,
   });
 };
 

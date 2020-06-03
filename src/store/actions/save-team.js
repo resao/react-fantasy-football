@@ -22,11 +22,11 @@ export const saveTeamStart = () => {
   };
 };
 
-export const saveTeam = (saveData) => {
+export const saveTeam = (saveData, token) => {
   return async (dispatch) => {
     try {
       dispatch(saveTeamStart());
-      const response = await axios.post("/saves.json", saveData);
+      const response = await axios.post(`/saves.json?auth=${token}`, saveData);
       dispatch(saveTeamSuccess(response.data.name, saveData));
     } catch (e) {
       dispatch(saveTeamFail(e));
@@ -60,11 +60,12 @@ export const fetchSavesStart = () => {
   };
 };
 
-export const fetchSaves = () => {
+export const fetchSaves = (token, userId) => {
   return async (dispatch) => {
     try {
       dispatch(fetchSavesStart());
-      const saves = await axios.get("/saves.json");
+      const queryParams = `?auth=${token}&orderBy="userId"&equalTo="${userId}"`;
+      const saves = await axios.get(`/saves.json${queryParams}`);
       const fetchedSaves = [];
 
       for (let key in saves.data) {

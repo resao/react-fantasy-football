@@ -111,11 +111,10 @@ class ContactData extends Component {
       players: this.props.players,
       price: this.props.price,
       saveData: formData,
+      userId: this.props.userId,
     };
 
-    console.log(save);
-
-    this.props.onSaveTeam(save);
+    this.props.onSaveTeam(save, this.props.token);
   };
 
   checkValidity(value, rules) {
@@ -212,11 +211,13 @@ const mapStateToProps = (state) => ({
   players: state.teamBuilder.players,
   price: state.teamBuilder.totalPrice,
   loading: state.saveTeam.loading,
+  token: state.auth.token,
+  userId: state.auth.userId,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSaveTeam: (data) => dispatch(actions.saveTeam(data)),
+    onSaveTeam: (data, token) => dispatch(actions.saveTeam(data, token)),
   };
 };
 
