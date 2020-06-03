@@ -1,4 +1,6 @@
-# Simple application demonstrating React features
+# react-fantasy-football
+
+A simple application demonstrating the following React features:
 
 - Class-based components (/containers)
 - Functional components (/components)
