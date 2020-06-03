@@ -7,6 +7,7 @@ import Input from "../../../components/ui/input/";
 import { connect } from "react-redux";
 import ErrorHandler from "../../../hoc/error-handler/";
 import * as actions from "../../../store/actions/";
+import { updateObject } from "../../../shared/utility";
 
 class ContactData extends Component {
   state = {
@@ -140,22 +141,18 @@ class ContactData extends Component {
   }
 
   inputChangedhandler = (event, id) => {
-    const updatedSaveForm = {
-      ...this.state.saveForm,
-    };
+    const updatedFormElement = updateObject(this.state.saveForm[id], {
+      value: event.target.value,
+      valid: this.checkValidity(
+        event.target.value,
+        this.state.saveForm[id].validation
+      ),
+      touched: true,
+    });
 
-    const updatedFormElement = {
-      ...updatedSaveForm[id],
-    };
-
-    updatedFormElement.value = event.target.value;
-
-    updatedFormElement.valid = this.checkValidity(
-      updatedFormElement.value,
-      updatedFormElement.validation
-    );
-
-    updatedFormElement.touched = true;
+    const updatedSaveForm = updateObject(this.state.saveForm, {
+      [id]: updatedFormElement,
+    });
 
     updatedSaveForm[id] = updatedFormElement;
 
