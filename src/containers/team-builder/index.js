@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import * as actions from "../../store/actions/";
 import axios from "../../axios-team-data";
 
-class TeamBuilder extends Component {
+export class TeamBuilder extends Component {
   state = {
     saving: false,
   };

@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<NavigationItems/> should render correct <NavigationItem/> elements if authenticated 1`] = `
+<ul
+  className="items"
+>
+  <_default
+    exact={true}
+    link="/"
+  >
+    Team Builder
+  </_default>
+  <_default
+    link="/saves"
+  >
+    Saves
+  </_default>
+  <_default
+    link="/logout"
+  >
+    Logout
+  </_default>
+</ul>
+`;
+
+exports[`<NavigationItems/> should render correct <NavigationItem/> elements if not authenticated 1`] = `
+<ul
+  className="items"
+>
+  <_default
+    exact={true}
+    link="/"
+  >
+    Team Builder
+  </_default>
+  <_default
+    link="/auth"
+  >
+    Authenticate
+  </_default>
+</ul>
+`;

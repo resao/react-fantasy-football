@@ -3,7 +3,7 @@ import Backdrop from "../backdrop/";
 
 import classes from "./modal.module.css";
 
-export default (props) => (
+const modal = (props) => (
   <React.Fragment>
     <Backdrop show={props.show} clicked={props.modalClosed} />
     <div
@@ -17,3 +17,5 @@ export default (props) => (
     </div>
   </React.Fragment>
 );
+
+export default modal;

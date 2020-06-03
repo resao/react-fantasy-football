@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<TeamBuilder/> should match snapshot when receiving players 1`] = `
+<Fragment>
+  <modal
+    modalClosed={[Function]}
+    show={false}
+  >
+    <_default
+      players={
+        Object {
+          "defender": 3,
+          "forward": 2,
+          "goalkeeper": 1,
+          "midfielder": 5,
+        }
+      }
+      saveCancelled={[Function]}
+      saveContinued={[Function]}
+    />
+  </modal>
+  <team
+    players={
+      Object {
+        "defender": 3,
+        "forward": 2,
+        "goalkeeper": 1,
+        "midfielder": 5,
+      }
+    }
+  />
+  <controls
+    players={
+      Object {
+        "defender": false,
+        "forward": false,
+        "goalkeeper": false,
+        "midfielder": false,
+      }
+    }
+    saved={[Function]}
+    valid={true}
+  />
+</Fragment>
+`;
