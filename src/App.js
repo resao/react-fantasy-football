@@ -29,6 +29,7 @@ class App extends Component {
           <Route path="/save" component={SaveTeam} />
           <Route path="/saves" component={Saves} />
           <Route path="/logout" component={Logout} />
+          <Route path="/auth" component={Auth} />
           <Route path="/" component={TeamBuilder} exact />
           <Redirect to="/" />
         </Switch>
