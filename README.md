@@ -9,6 +9,7 @@ A simple application demonstrating the following React features:
 - State management with redux and redux-thunk
 - API integration with firebase
 - Authentication with firebase
+- Unit test examples with Jest and Enzyme
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
