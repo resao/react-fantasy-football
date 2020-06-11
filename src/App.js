@@ -1,53 +1,50 @@
-import React, { Component } from "react";
+import React, { useEffect, Suspense } from "react";
 import Layout from "./containers/layout/";
 import TeamBuilder from "./containers/team-builder/";
 import { Switch, Route, withRouter, Redirect } from "react-router-dom";
 import Logout from "./containers/auth/logout";
 import { connect } from "react-redux";
 import * as actions from "./store/actions/";
-import asyncComponent from "./hoc/async-component/";
 
-const asyncSave = asyncComponent(() => {
+const Save = React.lazy(() => {
   return import("./containers/save-team/");
 });
 
-const asyncSaves = asyncComponent(() => {
+const Saves = React.lazy(() => {
   return import("./containers/saves/");
 });
 
-const asyncAuth = asyncComponent(() => {
+const Auth = React.lazy(() => {
   return import("./containers/auth/");
 });
 
-class App extends Component {
-  componentDidMount() {
-    this.props.onTryAutoSignIn();
-  }
+const App = props => {
+  useEffect(() => {
+    props.onTryAutoSignIn();
+  }, [props])
 
-  render() {
-    let routes = (
+  let routes = (
+    <Switch>
+      <Route path="/auth" render={() => <Auth />} />
+      <Route path="/" component={TeamBuilder} exact />
+      <Redirect to="/" />
+    </Switch>
+  );
+
+  if (props.isAuthenticated) {
+    routes = (
       <Switch>
-        <Route path="/auth" component={asyncAuth} />
+        <Route path="/save" render={() => <Save />} />
+        <Route path="/saves" render={() => <Saves />} />
+        <Route path="/logout" component={Logout} />
+        <Route path="/auth" render={() => <Auth />} />
         <Route path="/" component={TeamBuilder} exact />
         <Redirect to="/" />
       </Switch>
     );
-
-    if (this.props.isAuthenticated) {
-      routes = (
-        <Switch>
-          <Route path="/save" component={asyncSave} />
-          <Route path="/saves" component={asyncSaves} />
-          <Route path="/logout" component={Logout} />
-          <Route path="/auth" component={asyncAuth} />
-          <Route path="/" component={TeamBuilder} exact />
-          <Redirect to="/" />
-        </Switch>
-      );
-    }
-
-    return <Layout>{routes}</Layout>;
   }
+
+  return <Layout><Suspense fallback={<p>Loading...</p>}>{routes}</Suspense></Layout>;
 }
 
 const mapStateToProps = (state) => {
