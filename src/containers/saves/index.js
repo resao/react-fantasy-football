@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import Save from "../../components/save/";
 import axios from "../../axios-team-data";
 import ErrorHandler from "../../hoc/error-handler/";
@@ -6,26 +6,26 @@ import * as actions from "../../store/actions/";
 import { connect } from "react-redux";
 import Spinner from "../../components/ui/spinner/";
 
-class Saves extends Component {
-  componentDidMount() {
-    this.props.onFetchSaves(this.props.token, this.props.userId);
+const Saves = props => {
+  const { onFetchSaves, token, userId } = props
+
+  useEffect(() => {
+    onFetchSaves(token, userId);
+  }, [onFetchSaves, token, userId])
+
+  let saves = <Spinner />;
+
+  if (!props.loading) {
+    saves = (
+      <div>
+        {props.saves.map((save) => (
+          <Save key={save.id} {...save} />
+        ))}
+      </div>
+    );
   }
 
-  render() {
-    let saves = <Spinner />;
-
-    if (!this.props.loading) {
-      saves = (
-        <div>
-          {this.props.saves.map((save) => (
-            <Save key={save.id} {...save} />
-          ))}
-        </div>
-      );
-    }
-
-    return saves;
-  }
+  return saves;
 }
 
 const mapStateToProps = (state) => {

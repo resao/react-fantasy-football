@@ -19,13 +19,14 @@ const Auth = React.lazy(() => {
 });
 
 const App = props => {
+  const { onTryAutoSignIn } = props
   useEffect(() => {
-    props.onTryAutoSignIn();
-  }, [props])
+    onTryAutoSignIn();
+  }, [onTryAutoSignIn])
 
   let routes = (
     <Switch>
-      <Route path="/auth" render={() => <Auth />} />
+      <Route path="/auth" render={props => <Auth {...props} />} />
       <Route path="/" component={TeamBuilder} exact />
       <Redirect to="/" />
     </Switch>
@@ -34,10 +35,10 @@ const App = props => {
   if (props.isAuthenticated) {
     routes = (
       <Switch>
-        <Route path="/save" render={() => <Save />} />
-        <Route path="/saves" render={() => <Saves />} />
+        <Route path="/save" render={props => <Save {...props} />} />
+        <Route path="/saves" render={props => <Saves {...props} />} />
         <Route path="/logout" component={Logout} />
-        <Route path="/auth" render={() => <Auth />} />
+        <Route path="/auth" render={props => <Auth {...props} />} />
         <Route path="/" component={TeamBuilder} exact />
         <Redirect to="/" />
       </Switch>
