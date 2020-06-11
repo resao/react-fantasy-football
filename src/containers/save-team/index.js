@@ -1,42 +1,40 @@
-import React, { Component } from "react";
+import React from "react";
 import Summary from "../../components/save/summary/";
 import { Route, Redirect } from "react-router-dom";
 import ContactData from "./contact-data";
 import { connect } from "react-redux";
 
-class SaveTeam extends Component {
-  saveCancelledHandler = () => {
-    this.props.history.goBack();
+const SaveTeam = props => {
+  const saveCancelledHandler = () => {
+    props.history.goBack();
   };
 
-  saveContinuedHandler = () => {
-    this.props.history.replace("/save/contact-data");
+  const saveContinuedHandler = () => {
+    props.history.replace("/save/contact-data");
   };
 
-  render() {
-    let summary = <Redirect to="/" />;
+  let summary = <Redirect to="/" />;
 
-    if (this.props.players) {
-      const savedRedirect = this.props.saved ? <Redirect to="/" /> : null;
+  if (props.players) {
+    const savedRedirect = props.saved ? <Redirect to="/" /> : null;
 
-      summary = (
-        <React.Fragment>
-          {savedRedirect}
-          <Summary
-            players={this.props.players}
-            saveCancelled={this.saveCancelledHandler}
-            saveContinued={this.saveContinuedHandler}
-          />
-          <Route
-            path={this.props.match.path + "/contact-data"}
-            component={ContactData}
-          />
-        </React.Fragment>
-      );
-    }
-
-    return summary;
+    summary = (
+      <React.Fragment>
+        {savedRedirect}
+        <Summary
+          players={props.players}
+          saveCancelled={saveCancelledHandler}
+          saveContinued={saveContinuedHandler}
+        />
+        <Route
+          path={props.match.path + "/contact-data"}
+          component={ContactData}
+        />
+      </React.Fragment>
+    );
   }
+
+  return summary;
 }
 
 const mapStateToProps = (state) => ({

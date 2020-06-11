@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import axios from "../../../axios-team-data";
 import Button from "../../../components/ui/button/";
 import Spinner from "../../../components/ui/spinner/";
@@ -9,126 +9,125 @@ import ErrorHandler from "../../../hoc/error-handler/";
 import * as actions from "../../../store/actions/";
 import { updateObject, checkValidity } from "../../../shared/utility";
 
-class ContactData extends Component {
-  state = {
-    saveForm: {
-      name: {
-        type: "input",
-        config: {
-          type: "text",
-          placeholder: "Name",
-        },
-        validation: {
-          required: true,
-        },
-        valid: false,
-        touched: false,
-        value: "",
+const ContactData = props => {
+  const [saveForm, setSaveForm] = useState({
+    name: {
+      type: "input",
+      config: {
+        type: "text",
+        placeholder: "Name",
       },
-      street: {
-        type: "input",
-        config: {
-          type: "text",
-          placeholder: "Street",
-        },
-        validation: {
-          required: true,
-        },
-        valid: false,
-        touched: false,
-        value: "",
+      validation: {
+        required: true,
       },
-      zip: {
-        type: "input",
-        config: {
-          type: "text",
-          placeholder: "Zip code",
-        },
-        validation: {
-          minLength: 5,
-          maxLength: 7,
-          required: true,
-        },
-        valid: false,
-        touched: false,
-        value: "",
-      },
-      country: {
-        type: "input",
-        config: {
-          type: "text",
-          placeholder: "Country",
-        },
-        validation: {
-          required: true,
-        },
-        valid: false,
-        touched: false,
-        value: "",
-      },
-      email: {
-        type: "input",
-        config: {
-          type: "email",
-          placeholder: "E-Mail",
-        },
-        validation: {
-          required: true,
-        },
-        valid: false,
-        touched: false,
-        value: "",
-      },
-      deliveryMethod: {
-        type: "select",
-        config: {
-          options: [
-            {
-              value: "fastest",
-              title: "Fastest",
-            },
-            {
-              value: "cheapest",
-              title: "Cheapest",
-            },
-          ],
-        },
-        valid: true,
-        value: "fastest",
-      },
+      valid: false,
+      touched: false,
+      value: "",
     },
-    formIsValid: false,
-  };
+    street: {
+      type: "input",
+      config: {
+        type: "text",
+        placeholder: "Street",
+      },
+      validation: {
+        required: true,
+      },
+      valid: false,
+      touched: false,
+      value: "",
+    },
+    zip: {
+      type: "input",
+      config: {
+        type: "text",
+        placeholder: "Zip code",
+      },
+      validation: {
+        minLength: 5,
+        maxLength: 7,
+        required: true,
+      },
+      valid: false,
+      touched: false,
+      value: "",
+    },
+    country: {
+      type: "input",
+      config: {
+        type: "text",
+        placeholder: "Country",
+      },
+      validation: {
+        required: true,
+      },
+      valid: false,
+      touched: false,
+      value: "",
+    },
+    email: {
+      type: "input",
+      config: {
+        type: "email",
+        placeholder: "E-Mail",
+      },
+      validation: {
+        required: true,
+      },
+      valid: false,
+      touched: false,
+      value: "",
+    },
+    deliveryMethod: {
+      type: "select",
+      config: {
+        options: [
+          {
+            value: "fastest",
+            title: "Fastest",
+          },
+          {
+            value: "cheapest",
+            title: "Cheapest",
+          },
+        ],
+      },
+      valid: true,
+      value: "fastest",
+    },
+  })
 
-  saveHandler = (event) => {
+  const [formIsValid, setFormIsValid] = useState(false)
+
+  const saveHandler = (event) => {
     event.preventDefault();
 
     const formData = {};
-    for (let element in this.state.saveForm) {
-      formData[element] = this.state.saveForm[element].value;
+    for (let element in saveForm) {
+      formData[element] = saveForm[element].value;
     }
 
     const save = {
-      players: this.props.players,
-      price: this.props.price,
+      players: props.players,
+      price: props.price,
       saveData: formData,
-      userId: this.props.userId,
+      userId: props.userId,
     };
 
-    this.props.onSaveTeam(save, this.props.token);
+    props.onSaveTeam(save, props.token);
   };
 
-  inputChangedhandler = (event, id) => {
-    const updatedFormElement = updateObject(this.state.saveForm[id], {
+  const inputChangedhandler = (event, id) => {
+    const updatedFormElement = updateObject(saveForm[id], {
       value: event.target.value,
       valid: checkValidity(
         event.target.value,
-        this.state.saveForm[id].validation
+        saveForm[id].validation
       ),
       touched: true,
     });
 
-    const updatedSaveForm = updateObject(this.state.saveForm, {
+    const updatedSaveForm = updateObject(saveForm, {
       [id]: updatedFormElement,
     });
 
@@ -140,46 +139,45 @@ class ContactData extends Component {
       formIsValid = updatedSaveForm[inputIdentifier].valid && formIsValid;
     }
 
-    this.setState({ saveForm: updatedSaveForm, formIsValid });
+    setSaveForm(updatedSaveForm)
+    setFormIsValid(formIsValid)
   };
 
-  render() {
-    const formElements = Object.keys(this.state.saveForm).map((key) => ({
-      id: key,
-      data: this.state.saveForm[key],
-    }));
+  const formElements = Object.keys(saveForm).map((key) => ({
+    id: key,
+    data: saveForm[key],
+  }));
 
-    let form = (
-      <form onSubmit={this.saveHandler}>
-        {formElements.map((element) => (
-          <Input
-            key={element.id}
-            type={element.data.type}
-            config={element.data.config}
-            value={element.data.value}
-            invalid={!element.data.valid}
-            shouldValidate={element.data.validation}
-            touched={element.data.touched}
-            changed={(event) => this.inputChangedhandler(event, element.id)}
-          />
-        ))}
-        <Button btnType="success" disabled={!this.state.formIsValid}>
-          SAVE
-        </Button>
-      </form>
-    );
+  let form = (
+    <form onSubmit={saveHandler}>
+      {formElements.map((element) => (
+        <Input
+          key={element.id}
+          type={element.data.type}
+          config={element.data.config}
+          value={element.data.value}
+          invalid={!element.data.valid}
+          shouldValidate={element.data.validation}
+          touched={element.data.touched}
+          changed={(event) => inputChangedhandler(event, element.id)}
+        />
+      ))}
+      <Button btnType="success" disabled={!formIsValid}>
+        SAVE
+      </Button>
+    </form>
+  );
 
-    if (this.props.loading) {
-      form = <Spinner />;
-    }
-
-    return (
-      <div className={classes["contact-data"]}>
-        <h4>Enter your Contact Data</h4>
-        {form}
-      </div>
-    );
+  if (props.loading) {
+    form = <Spinner />;
   }
+
+  return (
+    <div className={classes["contact-data"]}>
+      <h4>Enter your Contact Data</h4>
+      {form}
+    </div>
+  );
 }
 
 const mapStateToProps = (state) => ({

@@ -1,33 +1,45 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Team from "../../components/team/";
 import Controls from "../../components/team/controls/";
 import Modal from "../../components/ui/modal/";
 import Summary from "../../components/team/summary/";
 import Spinner from "../../components/ui/spinner";
 import ErrorHandler from "../../hoc/error-handler/";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../store/actions/";
 import axios from "../../axios-team-data";
 
-export class TeamBuilder extends Component {
-  state = {
-    saving: false,
-  };
+const TeamBuilder = props => {
+  const [saving, setSaving] = useState(false)
 
-  componentDidMount() {
-    this.props.onInitPlayers();
-  }
+  const dispatch = useDispatch()
 
-  saveHandler = () => {
-    if (this.props.isAuthenticated) {
-      this.setState({ saving: true });
+  const players = useSelector(state => state.teamBuilder.players)
+  const price = useSelector(state => state.teamBuilder.totalPrice)
+  const error = useSelector(state => state.teamBuilder.error)
+  const isAuthenticated = useSelector(state => !!state.auth.token)
+
+  const onPlayerAdded = (name) => dispatch(actions.addPlayer(name))
+  const onPlayerRemoved = (name) => dispatch(actions.removePlayer(name))
+  const onInitPlayers = useCallback(() => dispatch(actions.initPlayers()), [dispatch])
+  const onInitSave = () => dispatch(actions.saveInit())
+  const onSetAuthRedirectPath = (path) =>
+    dispatch(actions.setAuthRedirectPath(path))
+
+  useEffect(() => {
+    onInitPlayers();
+  }, [onInitPlayers])
+
+  const saveHandler = () => {
+    if (isAuthenticated) {
+      setSaving(true)
     } else {
-      this.props.onSetAuthRedirectPath("/save");
-      this.props.history.push("/auth");
+      onSetAuthRedirectPath("/save");
+      props.history.push("/auth");
     }
   };
 
-  updateValidState = (players) => {
+  const updateValidState = (players) => {
     const sum = Object.keys(players)
       .map((key) => {
         return players[key];
@@ -39,85 +51,60 @@ export class TeamBuilder extends Component {
     return sum > 0;
   };
 
-  saveCancelHandler = () => {
-    this.setState({ saving: false });
+  const saveCancelHandler = () => {
+    setSaving(false)
   };
 
-  saveContinueHandler = () => {
-    this.props.onInitSave();
-    this.props.history.push("/save");
+  const saveContinueHandler = () => {
+    onInitSave();
+    props.history.push("/save");
   };
 
-  render() {
-    let summary = null;
-    let team = this.props.error ? <p>Players failed to load </p> : <Spinner />;
+  let summary = null;
+  let team = error ? <p>Players failed to load </p> : <Spinner />;
 
-    const players = {
-      ...this.props.players,
-    };
+  const playerTypes = {
+    ...players,
+  };
 
-    for (let player in players) {
-      players[player] = players[player] <= 0;
-    }
+  for (let player in playerTypes) {
+    playerTypes[player] = playerTypes[player] <= 0;
+  }
 
-    if (this.props.players) {
-      summary = (
-        <Summary
-          players={this.props.players}
-          price={this.props.price}
-          saveCancelled={this.saveCancelHandler}
-          saveContinued={this.saveContinueHandler}
-        />
-      );
+  if (players) {
+    summary = (
+      <Summary
+        players={players}
+        price={price}
+        saveCancelled={saveCancelHandler}
+        saveContinued={saveContinueHandler}
+      />
+    );
 
-      team = (
-        <React.Fragment>
-          <Team players={this.props.players} />
-          <Controls
-            playerAdded={this.props.onPlayerAdded}
-            playerRemoved={this.props.onPlayerRemoved}
-            players={players}
-            price={this.props.price}
-            saved={this.saveHandler}
-            isAuthenticated={this.props.isAuthenticated}
-            valid={this.updateValidState(this.props.players)}
-          />
-        </React.Fragment>
-      );
-    }
-
-    return (
+    team = (
       <React.Fragment>
-        <Modal show={this.state.saving} modalClosed={this.saveCancelHandler}>
-          {summary}
-        </Modal>
-        {team}
+        <Team players={players} />
+        <Controls
+          playerAdded={onPlayerAdded}
+          playerRemoved={onPlayerRemoved}
+          players={playerTypes}
+          price={price}
+          saved={saveHandler}
+          isAuthenticated={isAuthenticated}
+          valid={updateValidState(players)}
+        />
       </React.Fragment>
     );
   }
+
+  return (
+    <React.Fragment>
+      <Modal show={saving} modalClosed={saveCancelHandler}>
+        {summary}
+      </Modal>
+      {team}
+    </React.Fragment>
+  );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    players: state.teamBuilder.players,
-    price: state.teamBuilder.totalPrice,
-    error: state.teamBuilder.error,
-    isAuthenticated: !!state.auth.token,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onPlayerAdded: (name) => dispatch(actions.addPlayer(name)),
-    onPlayerRemoved: (name) => dispatch(actions.removePlayer(name)),
-    onInitPlayers: () => dispatch(actions.initPlayers()),
-    onInitSave: () => dispatch(actions.saveInit()),
-    onSetAuthRedirectPath: (path) =>
-      dispatch(actions.setAuthRedirectPath(path)),
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ErrorHandler(TeamBuilder, axios));
+export default ErrorHandler(TeamBuilder, axios);
