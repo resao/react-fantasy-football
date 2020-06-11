@@ -2,8 +2,8 @@
 
 A simple application demonstrating the following React features:
 
-- Class-based components (/containers)
 - Functional components (/components)
+- Hooks
 - Higher order components (/hoc)
 - Routing with react-router-dom
 - State management with redux and redux-thunk
