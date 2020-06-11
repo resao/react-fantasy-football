@@ -1,27 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Team from "../../components/team/";
 import Controls from "../../components/team/controls/";
 import Modal from "../../components/ui/modal/";
 import Summary from "../../components/team/summary/";
 import Spinner from "../../components/ui/spinner";
 import ErrorHandler from "../../hoc/error-handler/";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../store/actions/";
 import axios from "../../axios-team-data";
 
 const TeamBuilder = props => {
   const [saving, setSaving] = useState(false)
-  const { onInitPlayers } = props
+
+  const dispatch = useDispatch()
+
+  const players = useSelector(state => state.teamBuilder.players)
+  const price = useSelector(state => state.teamBuilder.totalPrice)
+  const error = useSelector(state => state.teamBuilder.error)
+  const isAuthenticated = useSelector(state => !!state.auth.token)
+
+  const onPlayerAdded = (name) => dispatch(actions.addPlayer(name))
+  const onPlayerRemoved = (name) => dispatch(actions.removePlayer(name))
+  const onInitPlayers = useCallback(() => dispatch(actions.initPlayers()), [dispatch])
+  const onInitSave = () => dispatch(actions.saveInit())
+  const onSetAuthRedirectPath = (path) =>
+    dispatch(actions.setAuthRedirectPath(path))
 
   useEffect(() => {
     onInitPlayers();
   }, [onInitPlayers])
 
   const saveHandler = () => {
-    if (props.isAuthenticated) {
+    if (isAuthenticated) {
       setSaving(true)
     } else {
-      props.onSetAuthRedirectPath("/save");
+      onSetAuthRedirectPath("/save");
       props.history.push("/auth");
     }
   };
@@ -43,26 +56,26 @@ const TeamBuilder = props => {
   };
 
   const saveContinueHandler = () => {
-    props.onInitSave();
+    onInitSave();
     props.history.push("/save");
   };
 
   let summary = null;
-  let team = props.error ? <p>Players failed to load </p> : <Spinner />;
+  let team = error ? <p>Players failed to load </p> : <Spinner />;
 
-  const players = {
-    ...props.players,
+  const playerTypes = {
+    ...players,
   };
 
-  for (let player in players) {
-    players[player] = players[player] <= 0;
+  for (let player in playerTypes) {
+    playerTypes[player] = playerTypes[player] <= 0;
   }
 
-  if (props.players) {
+  if (players) {
     summary = (
       <Summary
-        players={props.players}
-        price={props.price}
+        players={players}
+        price={price}
         saveCancelled={saveCancelHandler}
         saveContinued={saveContinueHandler}
       />
@@ -70,15 +83,15 @@ const TeamBuilder = props => {
 
     team = (
       <React.Fragment>
-        <Team players={props.players} />
+        <Team players={players} />
         <Controls
-          playerAdded={props.onPlayerAdded}
-          playerRemoved={props.onPlayerRemoved}
-          players={players}
-          price={props.price}
+          playerAdded={onPlayerAdded}
+          playerRemoved={onPlayerRemoved}
+          players={playerTypes}
+          price={price}
           saved={saveHandler}
-          isAuthenticated={props.isAuthenticated}
-          valid={updateValidState(props.players)}
+          isAuthenticated={isAuthenticated}
+          valid={updateValidState(players)}
         />
       </React.Fragment>
     );
@@ -94,27 +107,4 @@ const TeamBuilder = props => {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    players: state.teamBuilder.players,
-    price: state.teamBuilder.totalPrice,
-    error: state.teamBuilder.error,
-    isAuthenticated: !!state.auth.token,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onPlayerAdded: (name) => dispatch(actions.addPlayer(name)),
-    onPlayerRemoved: (name) => dispatch(actions.removePlayer(name)),
-    onInitPlayers: () => dispatch(actions.initPlayers()),
-    onInitSave: () => dispatch(actions.saveInit()),
-    onSetAuthRedirectPath: (path) =>
-      dispatch(actions.setAuthRedirectPath(path)),
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ErrorHandler(TeamBuilder, axios));
+export default ErrorHandler(TeamBuilder, axios);
